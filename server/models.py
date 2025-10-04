@@ -2,5 +2,5 @@ from pydantic import BaseModel
 
 class DataQuery(BaseModel):
     latitude: float
-    longetude: float
+    longitude: float
     year: int
