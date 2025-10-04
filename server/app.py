@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from models import DataQuery
 from FileManager import checkCache
 
@@ -8,6 +9,9 @@ import json
 from utils.utils import authenticate_service_account
 
 from flasgger import Swagger
+
+import ee
+
 
 load_dotenv()
 
@@ -19,6 +23,8 @@ authenticate_service_account(SERVICE_ACCOUNT, PRIVATE_KEY_PATH)
 
 app = Flask(__name__)
 swagger = Swagger(app)
+
+CORS(app)
 
 @app.route('/getData', methods=['POST'])
 def returnData():
@@ -83,6 +89,25 @@ def returnFollowup():
     temp = 1 #just for getting rid of errors
     
     #addCache(followup)
+
+
+@app.route('/test_map', methods=['GET'])
+def test_map():
+  """Endpoint will retrieve image of earth engine and return mapid and token
+  ---
+  get:
+    description: Retrieve image of earth engine and return mapid and token."""
+  mapod = ee.Image('CGIAR/SRTM90_V4').getMapId({'min': 0, 'max': 3000})
+  
+  template_values = {
+    'mapid': mapod['mapid'],
+    'token': mapod['token']
+  }
+
+  print(template_values)
+
+  return jsonify(template_values), 200
+
 
 @app.route('/')
 def index():
