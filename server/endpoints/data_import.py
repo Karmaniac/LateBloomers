@@ -1,31 +1,18 @@
 import ee
 import geemap
 import datetime
+import json
 
-def authenticate_service_account(service_account, private_key_path):
-    credentials = ee.ServiceAccountCredentials(service_account, private_key_path)
-    ee.Initialize(credentials=credentials)
+from utils.utils import BANDS, RENAME_MAP, sample_point, calculate_ndvi, calculate_gndvi, calculate_bloom_dates
 
-def sample_point(img, aoi):
-    # Compute mean over the AOI for each image. Use bestEffort to avoid failures
-    # on very large geometries.
-    mean = img.reduceRegion(
-        reducer=ee.Reducer.mean(),
-        geometry=aoi,
-        scale=10,
-        bestEffort=True,
-    )
-    # Return a Feature with the band's mean values and the image date.
-    return ee.Feature(None, mean).set('date', img.date().format('YYYY-MM-dd'))
-
-def fetch_data_year(lat, lon, date):
+def fetch_data_year(lat, lon, year):
     # Define area of interest (example coordinates)
+    # TODO: allow polygon input for field data
     aoi = ee.Geometry.Point([lon, lat])  # or use a polygon for a field
 
     # TODO: adjust end date limit based on most recent data
-    input_date = datetime.datetime.strptime(date, "%Y-%m-%d")
-    date_start = (input_date - datetime.timedelta(days=182)).strftime("%Y-%m-%d")
-    date_end = (input_date + datetime.timedelta(days=183)).strftime("%Y-%m-%d")
+    date_start = f"{year}-01-01"
+    date_end = f"{year}-12-31"
     date_start = '2017-03-28' if date_start < '2017-03-28' else date_start
     date_end = '2025-10-04' if date_end > '2025-10-04' else date_end
 
@@ -34,27 +21,23 @@ def fetch_data_year(lat, lon, date):
         ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED")
         .filterDate(date_start, date_end)
         .filterBounds(aoi)
-        .select('B3', 'B4')  # Green + red bands
+        .select(BANDS)
     )
-
-    # Sample each image at a point and bring results to pandas
-    # Note: geemap.ee_to_df expects an ee.FeatureCollection. Mapping a function
-    # over an ImageCollection that returns Features still yields an ImageCollection,
-    # so we explicitly wrap the mapped results with ee.FeatureCollection(...).
 
     # Map the function over the ImageCollection and convert to a FeatureCollection.
     samples_fc = ee.FeatureCollection(s2.map(lambda img: sample_point(img, aoi)))
+    samples_fc = samples_fc.filter(ee.Filter.notNull(BANDS))
 
-    # Optionally remove rows with null band values (e.g., if image doesn't cover AOI
-    # or values are masked). Adjust band names as needed.
-    samples_fc = samples_fc.filter(ee.Filter.notNull(['B3', 'B4']))
-
-    # Convert to pandas DataFrame (make sure the collection is reasonably small).
     df = geemap.ee_to_df(samples_fc)
 
-    # json_data = df.to_json()
+    # TODO: perform these additions in the dataframe directly, for efficiency and for data analytics purposes
+    df = df.rename(columns=RENAME_MAP)
+    dict_data = df.to_dict(orient='list')
+    dict_data['ndvi'] = [calculate_ndvi(r, n) for r, n in zip(dict_data['red'], dict_data['nir'])]
+    dict_data['gndvi'] = [calculate_gndvi(g, n) for g, n in zip(dict_data['green'], dict_data['nir'])]
+    dict_data['bloom_dates'] = calculate_bloom_dates()
 
-    return df
+    return json.dumps(dict_data)
 
 def fetch_data_full(lat, lon):
     aoi = ee.Geometry.Point([lon, lat])
@@ -67,11 +50,18 @@ def fetch_data_full(lat, lon):
         ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED")
         .filterDate(date_start, date_end)
         .filterBounds(aoi)
-        .select('B3', 'B4')  # Green + red bands
+        .select(BANDS)
     )
     
     samples_fc = ee.FeatureCollection(s2.map(lambda img: sample_point(img, aoi)))
-    samples_fc = samples_fc.filter(ee.Filter.notNull(['B3', 'B4']))
+    samples_fc = samples_fc.filter(ee.Filter.notNull(BANDS))
     df = geemap.ee_to_df(samples_fc)
 
-    return df
+    # TODO: perform these additions in the dataframe directly, for efficiency and for data analytics purposes
+    df = df.rename(columns=RENAME_MAP)
+    dict_data = df.to_dict(orient='list')
+    dict_data['ndvi'] = [calculate_ndvi(r, n) for r, n in zip(dict_data['red'], dict_data['nir'])]
+    dict_data['gndvi'] = [calculate_gndvi(g, n) for g, n in zip(dict_data['green'], dict_data['nir'])]
+    dict_data['bloom_dates'] = calculate_bloom_dates()
+
+    return json.dumps(dict_data)
