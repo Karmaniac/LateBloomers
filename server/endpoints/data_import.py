@@ -21,6 +21,7 @@ def fetch_data_year(lat, lon, year):
         ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED")
         .filterDate(date_start, date_end)
         .filterBounds(aoi)
+        .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 20))
         .select(BANDS)
     )
 
