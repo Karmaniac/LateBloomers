@@ -81,7 +81,7 @@ button:focus-visible {
 }
 
 /* Past elements*/
-#map {
+#map-container {
 	width: 100%;
 	aspect-ratio: 3;
 	background-color: var(--alt-color);

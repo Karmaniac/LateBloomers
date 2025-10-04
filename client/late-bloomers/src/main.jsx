@@ -4,7 +4,7 @@ import './index.css'
 import Dashboard from './Dashboard.jsx'
 
 createRoot(document.getElementById('root')).render(
-	<StrictMode>
+	<div>
 		<Dashboard />
-	</StrictMode>,
+	</div>,
 )
