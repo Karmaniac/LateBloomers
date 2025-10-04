@@ -1,9 +1,9 @@
 import ee
 import geemap
-import datetime
-import json
 
 from utils.utils import BANDS, RENAME_MAP, sample_point, calculate_ndvi, calculate_gndvi, calculate_bloom_dates
+
+# TODO: handle cloud coverage filtering and other image quality issues
 
 def fetch_data_year(lat, lon, year):
     # Define area of interest (example coordinates)
@@ -37,7 +37,7 @@ def fetch_data_year(lat, lon, year):
     dict_data['gndvi'] = [calculate_gndvi(g, n) for g, n in zip(dict_data['green'], dict_data['nir'])]
     dict_data['bloom_dates'] = calculate_bloom_dates()
 
-    return json.dumps(dict_data)
+    return dict_data
 
 def fetch_data_full(lat, lon):
     aoi = ee.Geometry.Point([lon, lat])
@@ -64,4 +64,4 @@ def fetch_data_full(lat, lon):
     dict_data['gndvi'] = [calculate_gndvi(g, n) for g, n in zip(dict_data['green'], dict_data['nir'])]
     dict_data['bloom_dates'] = calculate_bloom_dates()
 
-    return json.dumps(dict_data)
+    return dict_data
