@@ -12,4 +12,7 @@ typing_extensions==4.15.0
 Werkzeug==3.1.3
 python-dotenv==1.1.1
 flasgger==0.9.7.1
+earthengine-api==1.6.10
+flask-cors==6.0.1
+geemap==0.36.4
 APScheduler==3.11.0
