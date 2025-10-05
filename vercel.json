@@ -20,7 +20,7 @@
 			"dest": "/client/late-bloomers/$1"
 		}
 	],
-	"installCommand": "npm install; pip install -r server/requirements.txt",
+	"installCommand": "npm install",
 	"buildCommand": "npm run build",
 	"outputDirectory": "client/late-bloomers/"
 }
