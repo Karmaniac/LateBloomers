@@ -8,21 +8,8 @@ import os
 import json
 from utils.utils import authenticate_service_account
 
-from flasgger import Swagger
-
-import ee
-
-
-load_dotenv()
-
-PRIVATE_KEY_PATH = os.getenv('PRIVATE_KEY_PATH')
-SERVICE_ACCOUNT = os.getenv('SERVICE_ACCOUNT')
-
-
-authenticate_service_account(SERVICE_ACCOUNT, PRIVATE_KEY_PATH)
-
 app = Flask(__name__)
-swagger = Swagger(app)
+# swagger = Swagger(app)
 
 CORS(app)
 
@@ -115,4 +102,11 @@ def index():
 
 
 if __name__ == '__main__':
-    app.run(debug=True) # debug=True enables auto-reloading and debugger
+    load_dotenv()
+
+    PRIVATE_KEY_PATH = os.getenv('PRIVATE_KEY_PATH')
+    SERVICE_ACCOUNT = os.getenv('SERVICE_ACCOUNT')
+
+    authenticate_service_account(SERVICE_ACCOUNT, PRIVATE_KEY_PATH)
+    
+    app.run(port=5000, debug=True) # debug=True enables auto-reloading and debugger

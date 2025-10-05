@@ -1,7 +1,9 @@
 import ee
 import json
+import math
 
 BANDS = ['B3', 'B4', 'B8']  # Green + red + NIR bands
+CLIMATE_BANDS = []
 RENAME_MAP = {
     'B3': 'green',
     'B4': 'red',
@@ -42,8 +44,20 @@ def sample_point(img, aoi):
         bestEffort=True,
     )
     # Return a Feature with the band's mean values and the image date.
-    return ee.Feature(None, mean).set('date', img.date().format('YYYY-MM-dd'))
+    return ee.Feature(aoi, mean).set('date', img.date().format('YYYY-MM-dd'))
 
 # TODO: implement calculate_bloom_dates
 def calculate_bloom_dates():
     return []
+
+def relative_humidity(temp_k, dewpoint_k):
+    """Compute RH (%) from temperature and dew point in °K."""
+    temp_c = temp_k - 273.15
+    dewpoint_c = dewpoint_k - 273.15
+    # Saturation vapor pressure (hPa)
+    es = 6.112 * math.exp((17.67 * temp_c) / (temp_c + 243.5))
+    # Actual vapor pressure (hPa)
+    e = 6.112 * math.exp((17.67 * dewpoint_c) / (dewpoint_c + 243.5))
+    # Relative humidity (%)
+    rh = 100 * (e / es)
+    return rh
