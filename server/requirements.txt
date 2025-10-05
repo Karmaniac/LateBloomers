@@ -14,4 +14,5 @@ python-dotenv==1.1.1
 flasgger==0.9.7.1
 earthengine-api==1.6.10
 flask-cors==6.0.1
+geemap==0.36.4
 
