@@ -1,22 +1,20 @@
-from flask import Flask, jsonify, request
-from flask_cors import CORS
-from models import DataQuery
-from FileManager import checkCache
-
-from dotenv import load_dotenv
-import os
 import json
-from utils.utils import authenticate_service_account
-
-from flasgger import Swagger
+import os
 
 import ee
+from dotenv import load_dotenv
+from flasgger import Swagger
+from flask import Flask, jsonify, request
+from flask_cors import CORS
 
+from FileManager import checkCache
+from models import DataQuery
+from utils.utils import authenticate_service_account
 
 load_dotenv()
 
-PRIVATE_KEY_PATH = os.getenv('PRIVATE_KEY_PATH')
-SERVICE_ACCOUNT = os.getenv('SERVICE_ACCOUNT')
+PRIVATE_KEY_PATH = os.getenv("PRIVATE_KEY_PATH")
+SERVICE_ACCOUNT = os.getenv("SERVICE_ACCOUNT")
 
 
 authenticate_service_account(SERVICE_ACCOUNT, PRIVATE_KEY_PATH)
@@ -26,7 +24,8 @@ swagger = Swagger(app)
 
 CORS(app)
 
-@app.route('/getData', methods=['POST'])
+
+@app.route("/getData", methods=["POST"])
 def returnData():
     """Endpoint to get data based on latitude, longitude, and year.
     ---
@@ -57,17 +56,18 @@ def returnData():
                 type: object
         400:
           description: Invalid input.
-      
+
     """
     if request.is_json:
         data = DataQuery.model_validate_json(json.dumps(request.get_json()))
         returnJson = checkCache(data, 0)
-        
+
         return jsonify(returnJson), 200
 
     return jsonify({"error": "Request must be JSON"}), 400
 
-@app.route('/getDataFollowup')
+
+@app.route("/getDataFollowup")
 def returnFollowup():
     """Endpoint to get follow-up data.
     ---
@@ -83,36 +83,34 @@ def returnFollowup():
         400:
           description: Invalid input.
     """
-    #TODO await the followupdata
-    #followup = call full year range
-    
-    temp = 1 #just for getting rid of errors
-    
-    #addCache(followup)
+    # TODO await the followupdata
+    # followup = call full year range
+
+    temp = 1  # just for getting rid of errors
+
+    # addCache(followup)
 
 
-@app.route('/test_map', methods=['GET'])
+@app.route("/test_map", methods=["GET"])
 def test_map():
-  """Endpoint will retrieve image of earth engine and return mapid and token
-  ---
-  get:
-    description: Retrieve image of earth engine and return mapid and token."""
-  mapod = ee.Image('CGIAR/SRTM90_V4').getMapId({'min': 0, 'max': 3000})
-  
-  template_values = {
-    'mapid': mapod['mapid'],
-    'token': mapod['token']
-  }
+    """Endpoint will retrieve image of earth engine and return mapid and token
+    ---
+    get:
+      description: Retrieve image of earth engine and return mapid and token."""
+    mapod = ee.Image("CGIAR/SRTM90_V4").getMapId({"min": 0, "max": 3000})
 
-  print(template_values)
+    template_values = {"mapid": mapod["mapid"], "token": mapod["token"]}
 
-  return jsonify(template_values), 200
+    print(template_values)
+
+    return jsonify(template_values), 200
 
 
-@app.route('/')
+@app.route("/")
 def index():
     return "Hello, World!"
 
 
-if __name__ == '__main__':
-    app.run(debug=True) # debug=True enables auto-reloading and debugger
+if __name__ == "__main__":
+    app.run(debug=True)  # debug=True enables auto-reloading and debugger
+
