@@ -1,12 +1,14 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from models import DataQuery
+from models import DataQuery, PollDataQuery
 from FileManager import checkCache
 
 from dotenv import load_dotenv
 import os
 import json
 from utils.utils import authenticate_service_account
+
+from data_import.data_import import fetch_climate_data, poll_data
 
 app = Flask(__name__)
 # swagger = Swagger(app)
@@ -100,6 +102,29 @@ def test_map():
 def index():
     return "Hello, World!"
 
+@app.route('/getClimateData', methods=['POST'])
+def returnClimateData():
+    """Endpoint to get climate data based on latitude, longitude, and year."""
+
+    if request.is_json:
+        data = DataQuery.model_validate_json(json.dumps(request.get_json()))
+        returnJson = fetch_climate_data(data.latitude, data.longitude, data.year)
+        
+        return jsonify(returnJson), 200
+
+    return jsonify({"error": "Request must be JSON"}), 400
+
+@app.route('/pollData', methods=['POST'])
+def pollDataFromRegion():
+    """Endpoint to poll data based on latitude and longitude."""
+
+    if request.is_json:
+        data = PollDataQuery.model_validate_json(json.dumps(request.get_json()))
+        returnJson = poll_data(data.latitude, data.longitude)
+
+        return jsonify(returnJson), 200
+
+    return jsonify({"error": "Request must be JSON"}), 400
 
 if __name__ == '__main__':
     load_dotenv()
