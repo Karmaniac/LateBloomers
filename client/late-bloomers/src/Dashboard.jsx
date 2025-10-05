@@ -17,7 +17,7 @@ function Dashboard() {
 		<div id='dashboard'>
 			<div id='past'>
 				<div id="map-container">
-					<iframe src='https://bloomwatch-nasasapceapps.projects.earthengine.app/view/car-with-agri-yeilds' title='Google Earth Engine Map'></iframe>
+					<iframe src='https://bloomwatch-nasasapceapps.projects.earthengine.app/view/car-with-agri-plots' title='Google Earth Engine Map'></iframe>
 				</div>
 				<div className='graph'>
 					<Chart data={nvdi} />
