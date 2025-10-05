@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Chart from './Chart.jsx'
 
 function Dashboard() {
 	const [count, setCount] = useState(0);
@@ -10,7 +11,7 @@ function Dashboard() {
 					<iframe src='https://bloomwatch-nasasapceapps.projects.earthengine.app/view/late-bloomers' title='Google Earth Engine Map'></iframe>
 				</div>
 				<div className='graph'>
-					GRAPH HERE
+					<Chart />
 				</div>
 			</div>
 			<div id='future'>
