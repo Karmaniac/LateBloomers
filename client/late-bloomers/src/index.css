@@ -1,10 +1,11 @@
 body {
-	--bg-color: #9ece6a;
+	--bg-color: #d6d6b1;
 	--txt-color: #1a1b26;
 	--highlight-color: #1f2335;
 	--alt-color: #ff9e64;
 
 	--gap-size: 2%;
+	--border-rad: 25px;
 
 	background-color: var(--bg-color);
 	color: var(--txt-color);
@@ -18,11 +19,17 @@ body {
 	font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
 	line-height: 1.5;
 	font-weight: 400;
+	font-size: 2em;
 
 	font-synthesis: none;
 	text-rendering: optimizeLegibility;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
+}
+
+ul {
+	margin: 0;
+	list-style-type: none; /* Remove bullets */
 }
 
 a {
@@ -70,21 +77,21 @@ button:focus-visible {
 }
 
 #past {
-	width: 70%;
+	width: 50%;
 	margin: var(--gap-size);
-	border-right: 5px solid #000;
 }
 
 #future {
-	width: 30%;
+	width: 40%;
 	margin: var(--gap-size);
+	margin-left: 0;
 }
 
 /* Past elements*/
 #map-container {
 	width: 100%;
-	height: 100%;
-	background-color: var(--alt-color);
+	height: 60vh;
+	border: none;
 }
 
 iframe {
@@ -95,8 +102,65 @@ iframe {
 
 .graph {
 	width: 100%;
-	height: 200px;
-	background-color: var(--alt-color);
+	/* height: 40vh; */
 }
 
 /* Future elements*/
+.card {
+	width: 100%;
+	/* aspect-ratio: 1.5; */
+	margin: var(--gap-size);
+	border-radius: var(--border-rad);
+	padding: var(--gap-size);
+	background-image: linear-gradient(180deg, #ef5b5b, #239a5a, #5e574d);
+}
+
+.card_content {
+	border-radius: var(--border-rad);
+	width: 100%;
+	height: 100%;
+	background-color: #fff;
+}
+
+.card_content h3 {
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+
+.card_content > div {
+	border-radius: var(--border-rad);
+	width: 100%;
+	height: 100%;
+}
+
+.card_content > img {
+	border-radius: var(--border-rad);
+	width: 100%;
+	height: 100%;
+}
+
+.card_content canvas {
+	border-radius: 17px;
+	height: 100%;
+}
+
+form {
+	display: flex;
+	justify-content: space-evenly;
+	row-gap: var(--gap-size);
+}
+
+select {
+	display: inline-block;
+	font-size: 0.5em;
+	width: 30%;
+	text-align: center;
+	border-radius: 0;
+	height: 50px;
+	background-color: #ef5b5b;
+}
+
+input {
+	font-size: 0.5em;
+	background-color: #ef5b5b;
+}
